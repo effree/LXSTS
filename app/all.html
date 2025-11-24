@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes" />
+    <meta name="description" content="LXSTS - Simple List Management" />
+    <meta name="author" content="" />
+    <title>LISTS - All Lists</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script crossorigin="anonymous" src="js/fa.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet"
+        type="text/css" />
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+
+<body id="page-top">
+    <nav class="navbar navbar-expand-sm bg-secondary text-uppercase fixed-top py-0" id="mainNav">
+        <div class="container pe-0">
+            <a class="navbar-brand" href="/home.html"><span><i class="fas fa-check"></i>HOME</span><span><i
+                        class="fas fa-check"></i>LISTS</span></a>
+            <button class="navbar-toggler text-uppercase border-0 fw-bold me-1 text-muted" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars fs-5"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto" style="font-size: .85rem;">
+                    <li class="nav-item me-1 mx-lg-1"><a class="nav-link px-2 px-lg-2 rounded"
+                            href="/list.html?p=new"><i class="fas fa-plus"></i> New List</a></li>
+                    <li class="nav-item me-1 mx-lg-1"><a class="nav-link px-2 px-lg-2 rounded toggle-theme"
+                            href="javascript:;"><i class="fas fa-lightbulb"></i> Theme</a></li>
+                    <li class="nav-item me-1 mx-lg-1"><a class="nav-link px-2 px-lg-2 rounded" href="javascript:;"
+                            id="signout-btn"><i class="fas fa-right-from-bracket"></i> Signout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-section" id="body-all-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <form name="search" id="search">
+                    <div class="col-12 col-md-12 col-lg-12 col-xl-12 p-2">
+                        <div class="form-group">
+                            <div class="input-group ms-0 shadow mb-2">
+                                <input
+                                    class="form-control ps-3 pe-3 py-2 bg-secondary border-0 text-white rounded-0 rounded-start ms-0"
+                                    id="term" name="term" type="text" placeholder="Search" />
+                                <div class="input-group-append">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-primary rounded-0 rounded-end py-2 px-3"><i
+                                            class="fas fa-magnifying-glass fs-6"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="col-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                    <div class="dropdown float-end">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-arrow-down-short-wide"></i><span class="px-1">Sort by:</span> <span
+                                id="sort-selected">List Name</span>
+                        </button>
+                        <div class="dropdown-menu bg-secondary" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item text-white" href="javascript:;" onclick="sortLists('name')"><span
+                                    class="px-1">Sort by:</span> <span>List Name</span></a>
+                            <a class="dropdown-item text-white" href="javascript:;"
+                                onclick="sortLists('modified')"><span class="px-1">Sort by:</span> <span>Last
+                                    Modified</span></a>
+                            <a class="dropdown-item text-white" href="javascript:;" onclick="sortLists('created')"><span
+                                    class="px-1">Sort by:</span> <span>Created Date</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-12 col-lg-12 col-xl-12">
+                    <ul class="list-inline" id="all-list">
+                        <!-- Lists will be loaded here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/init.js"></script>
+    <script>
+        let allLists = [];
+        let currentSort = 'name';
+        let currentSearchTerm = '';
+
+        // Initialize
+        (async function () {
+            // Check authentication
+            const isAuth = await API.checkAuth();
+            if (!isAuth) {
+                window.location.href = '/index.html';
+                return;
+            }
+
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchTerm = urlParams.get('term');
+            const sortParam = urlParams.get('sort');
+
+            if (searchTerm) {
+                document.getElementById('term').value = searchTerm;
+                currentSearchTerm = searchTerm;
+            }
+
+            if (sortParam) {
+                if (sortParam === '1') currentSort = 'name';
+                else if (sortParam === '2') currentSort = 'modified';
+                else if (sortParam === '3') currentSort = 'created';
+            }
+
+            // Load lists
+            await loadLists();
+
+            // Signout handler
+            document.getElementById('signout-btn').addEventListener('click', async function () {
+                await API.logout();
+                window.location.href = '/index.html';
+            });
+
+            // Search form handler
+            document.getElementById('search').addEventListener('submit', function (e) {
+                e.preventDefault();
+                currentSearchTerm = document.getElementById('term').value;
+                displayLists();
+            });
+        })();
+
+        async function loadLists() {
+            try {
+                allLists = await API.getLists();
+                displayLists();
+            } catch (error) {
+                console.error('Error loading lists:', error);
+                document.getElementById('all-list').innerHTML = '<li class="px-2 py-2 text-white">Error loading lists</li>';
+            }
+        }
+
+        async function displayLists() {
+            let listsToDisplay = [...allLists];
+
+            // Filter by search term (including items)
+            if (currentSearchTerm) {
+                const term = currentSearchTerm.toLowerCase();
+                const matchingLists = [];
+
+                // Show loading indicator
+                document.getElementById('all-list').innerHTML = '<li class="px-2 py-2 text-white">Searching...</li>';
+
+                for (const list of listsToDisplay) {
+                    // Check list name first
+                    if (list.name.toLowerCase().includes(term)) {
+                        matchingLists.push(list);
+                        continue;
+                    }
+
+                    // Check list items
+                    try {
+                        const fullList = await API.getList(list.id);
+                        if (fullList && fullList.items) {
+                            const itemMatch = fullList.items.some(item =>
+                                item.item && item.item.toLowerCase().includes(term)
+                            );
+                            if (itemMatch) {
+                                matchingLists.push(list);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error loading list for search:', error);
+                    }
+                }
+
+                listsToDisplay = matchingLists;
+            }
+
+            // Sort lists
+            listsToDisplay.sort((a, b) => {
+                if (currentSort === 'name') {
+                    return a.name.localeCompare(b.name);
+                } else if (currentSort === 'modified') {
+                    return new Date(b.modified) - new Date(a.modified);
+                } else if (currentSort === 'created') {
+                    return new Date(b.created) - new Date(a.created);
+                }
+                return 0;
+            });
+
+            // Update sort label
+            const sortLabels = {
+                'name': 'List Name',
+                'modified': 'Last Modified',
+                'created': 'Created Date'
+            };
+            document.getElementById('sort-selected').textContent = sortLabels[currentSort];
+
+            // Display lists
+            const listContainer = document.getElementById('all-list');
+
+            if (listsToDisplay.length === 0) {
+                if (currentSearchTerm) {
+                    listContainer.innerHTML = `<li class="px-2 py-2 text-white">No results found for "${escapeHtml(currentSearchTerm)}"</li>`;
+                } else {
+                    listContainer.innerHTML = '<li class="px-2 py-2 text-white">No lists yet. Create your first list!</li>';
+                }
+                return;
+            }
+
+            listContainer.innerHTML = listsToDisplay.map(list => {
+                const created = new Date(list.created).toLocaleString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                });
+                const modified = new Date(list.modified).toLocaleString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                });
+
+                return `
+                        <li class="px-2 py-2">
+                            <a href="list.html?p=edit&l=${list.id}">
+                                <div>
+                                    <span class="text-white fs-5 d-block w-100">
+                                        ${escapeHtml(list.name)}
+                                    </span>
+                                    <span class="text-muted fs-6 d-block w-100 ps-2">
+                                        <span class="d-block w-100" style="font-size:.75rem;">CREATED: ${created}</span>
+                                        <span class="d-block w-100" style="font-size:.75rem;">MODIFIED: ${modified}</span>
+                                    </span>
+                                </div>
+                            </a>
+                        </li>
+                    `;
+            }).join('');
+        }
+
+        function sortLists(sortType) {
+            currentSort = sortType;
+            displayLists();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Unregister service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

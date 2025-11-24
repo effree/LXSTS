@@ -1,0 +1,42 @@
+# Data files (user lists stored here)
+data/
+backend/data/
+backend/flask_session/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
+
+# Zip archives
+*.zip
+
+# Instructions
+GITHUB_PUSH_INSTRUCTIONS.md

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes" />
+    <meta name="description" content="LXSTS - Simple List Management" />
+    <meta name="author" content="" />
+    <title>LISTS - Home</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script crossorigin="anonymous" src="js/fa.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet"
+        type="text/css" />
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+
+<body id="page-top">
+    <nav class="navbar navbar-expand-sm bg-secondary text-uppercase fixed-top py-0" id="mainNav">
+        <div class="container pe-0">
+            <a class="navbar-brand" href="/home.html"><i class="fas fa-check"></i>LISTS</a>
+            <button class="navbar-toggler text-uppercase border-0 fw-bold me-1 text-muted" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars fs-5"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto" style="font-size: .85rem;">
+                    <li class="nav-item me-1 mx-lg-1"><a class="nav-link px-2 px-lg-2 rounded"
+                            href="/list.html?p=new"><i class="fas fa-plus"></i> New List</a></li>
+                    <li class="nav-item me-1 mx-lg-1"><a class="nav-link px-2 px-lg-2 rounded" href="/all.html"><i
+                                class="fas fa-list-check"></i> All Lists</a></li>
+                    <li class="nav-item me-1 mx-lg-1"><a class="nav-link px-2 px-lg-2 rounded toggle-theme"
+                            href="javascript:;"><i class="fas fa-lightbulb"></i> Theme</a></li>
+                    <li class="nav-item me-1 mx-lg-1"><a class="nav-link px-2 px-lg-2 rounded" href="javascript:;"
+                            id="signout-btn"><i class="fas fa-right-from-bracket"></i> Signout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="vh-100 bg-secondary">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-9 col-lg-9 col-xl-9">
+                    <div class="card bg-dark text-white border-0 shadow">
+                        <form name="search" id="search" action="/all.html" method="GET">
+                            <div class="card-body px-5 text-center">
+                                <div class="form-group">
+                                    <h5 class="fw-bold mb-2 text-uppercase mb-4 search-shadow"><span
+                                            style="position:relative; top:12px; left:7px;"><i
+                                                class="fas fa-magnifying-glass text-primary fa-rotate-by"
+                                                style="--fa-rotate-angle: -12deg;font-size:39px;"></i></span>SEARCH</h5>
+                                    <div class="input-group ms-0 shadow mb-2">
+                                        <input
+                                            class="form-control ps-3 pe-3 py-2 bg-secondary border-0 text-white rounded-0 rounded-start ms-0"
+                                            id="term" name="term" type="text" placeholder="Search" />
+                                        <div class="input-group-append">
+                                            <button type="submit"
+                                                class="btn btn-sm btn-primary rounded-0 rounded-end py-2 px-3"><i
+                                                    class="fas fa-magnifying-glass fs-6"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="card-footer text-center pt-2 pb-4" style="background: var(--bs-secondary-2);">
+                            <span class="text-muted fw-lighter d-block w-100 mb-2" style="font-size:.75rem;">
+                                RECENTLY MODIFIED
+                            </span>
+                            <div id="recent-lists">
+                                <!-- Lists will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/init.js"></script>
+    <script>
+        // Check authentication
+        (async function () {
+            const isAuth = await API.checkAuth();
+            if (!isAuth) {
+                window.location.href = '/index.html';
+                return;
+            }
+
+            // Load recent lists
+            try {
+                const lists = await API.getLists();
+                const recentListsDiv = document.getElementById('recent-lists');
+
+                if (lists && lists.length > 0) {
+                    // Show up to 5 most recent
+                    const recentLists = lists.slice(0, 5);
+                    recentListsDiv.innerHTML = recentLists.map(list =>
+                        `<button type="button" class="btn btn-secondary btn-sm mx-1 mb-2 px-3" onclick="location.href='/list.html?p=edit&l=${list.id}';">${list.name}</button>`
+                    ).join('');
+                } else {
+                    recentListsDiv.innerHTML = '<span class="text-muted">No lists yet. Create your first list!</span>';
+                }
+            } catch (error) {
+                console.error('Error loading lists:', error);
+            }
+        })();
+
+        // Signout handler
+        document.getElementById('signout-btn').addEventListener('click', async function () {
+            await API.logout();
+            window.location.href = '/index.html';
+        });
+
+        // Disabled service worker - was blocking JS files
+        // if ('serviceWorker' in navigator) {
+        //     navigator.serviceWorker.register('/service-worker.js');   
+        // }
+
+        // Unregister any existing service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    registration.unregister();
+                    console.log('Unregistered service worker');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
