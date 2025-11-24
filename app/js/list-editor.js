@@ -63,7 +63,7 @@ function initializeListEditor() {
             // Initialize form dirty tracking
             console.log('Initializing dirty tracking...');
             $("#listNew").dirty({
-                preventLeaving: true,
+                preventLeaving: false, // Disable browser's ugly prompt, use custom modal instead
                 onDirty: function () {
                     $('.dirtyMsg').empty();
                     $('.dirtyMsg').append('Changes have been made to this list. ');
@@ -272,7 +272,7 @@ function addRow() {
     resort();
     totalCount();
     const textField = $('ul#sortable li:last-child').find('textarea').first();
-    
+
     // Scroll to bottom and focus new field
     setTimeout(function () {
         textField.focus();
@@ -282,7 +282,7 @@ function addRow() {
             behavior: 'smooth'
         });
     }, 300);
-    
+
     $("#listNew").dirty("setAsDirty");
 }
 
@@ -553,7 +553,7 @@ $(window).on("resize", function () {
 $(window).keydown(function (event) {
     // Detect if on mobile device
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
+
     if (event.keyCode == 13) {
         if (isMobile) {
             // On mobile: Enter adds new row (no shift required)

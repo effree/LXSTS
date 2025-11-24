@@ -11531,3 +11531,31 @@ textarea.jsitem {
 /* Mobile button improvements - minimum touch target size */
 @media (max-width: 768px) {
   .btn {\n    min-height: 44px;\n    min-width: 44px;\n  }\n  \n  /* Remove button active state on mobile */\n  button:active,\n  .btn:active {\n    transform: none !important;\n  }\n}\n
+
+/* Phase 2: Mobile header button optimizations */
+@media (max-width: 576px) {
+  /* Icon-only buttons on mobile - hide text */
+  .grow-btn span {
+    display: none !important;
+  }
+  
+  /* Larger touch targets on mobile */
+  .grow-btn {
+    width: 44px !important;
+    min-width: 44px;
+    height: 44px;
+  }
+  
+  /* Don't expand on hover/tap on mobile */
+  .grow-btn:hover,
+  .grow-btn:active {
+    width: 44px !important;
+  }
+  
+  /* Hide hover text expansion on mobile */
+  .grow-btn:hover span {
+    display: none !important;
+    opacity: 0 !important;
+  }
+}
+
