@@ -9,11 +9,15 @@ import os
 import storage
 import auth
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='static')
 app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # Enable CORS for frontend
 CORS(app, supports_credentials=True, origins=['http://localhost', 'http://localhost:80'])
+
+@app.route('/')
+def serve_index():
+    return app.send_static_file('index.html')
 
 # Session configuration
 app.config['SESSION_TYPE'] = 'filesystem'

@@ -1,19 +1,15 @@
-services:
-  web:
-    image: nginx:latest
-    ports:
-      - '80:80'
-    volumes:
-      - ./app:/usr/share/nginx/html
-      - ./config/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - backend
-    restart: unless-stopped
+version: "3"
 
-  backend:
-    build: ./backend
+services:
+  lxsts:
+    container_name: lxsts
+    image: ghcr.io/${GITHUB_REPOSITORY:-effree/lxsts}:latest
+    ports:
+      - '80:5000'
     volumes:
-      - ./backend/data:/app/data
-    env_file:
-      - .env
+      - ./data:/app/data
+    environment:
+      - LOGIN_USERNAME=admin
+      - LOGIN_PASSWORD=changeme
+      - SECRET_KEY=change-this-to-a-random-secret-key
     restart: unless-stopped

@@ -50,69 +50,6 @@ LXSTS/
 │       └── lists/        # JSON list files
 ├── config/
 │   └── default.conf      # Nginx configuration
-├── docker-compose.yml    # Docker services
-└── README.md             # This file
-```
-
-## 🚦 Getting Started
-
-### 1. Configure Environment Variables
-
-Copy the example environment file and update with your credentials:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and set your own credentials:
-
-```bash
-# Login Credentials
-LOGIN_USERNAME=your-username
-LOGIN_PASSWORD=your-secure-password
-
-# Flask Secret Key (generate a random string)
-SECRET_KEY=your-random-secret-key-here
-
-# Flask Debug Mode
-FLASK_DEBUG=False
-```
-
-> ⚠️ **Security Note**: Never commit your `.env` file to Git! It's already in `.gitignore`.
-
-### 2. Build the Application
-
-```bash
-docker compose build
-```
-
-**Build time**: ~10 seconds  
-**Image size**: ~200MB
-
-### 3. Start the Application
-
-```bash
-docker compose up -d
-```
-
-**Startup time**: ~1 second
-
-### 4. Access the Application
-
-Open your browser and navigate to:
-```
-http://localhost
-```
-
-Login with the credentials you set in your `.env` file.
-
-### 5. Stop the Application
-
-```bash
-docker compose down
-```
-
-## 🔧 Configuration
 
 ### Environment Variables
 
@@ -122,8 +59,6 @@ All configuration is done through the `.env` file (copy from `.env.example`):
 - `LOGIN_PASSWORD`: Your login password  
 - `SECRET_KEY`: Flask secret key for session encryption
 - `FLASK_DEBUG`: Set to `False` in production
-
-> ⚠️ **Security Note**: Always use strong passwords and change the default SECRET_KEY!
 
 ### Changing the Port
 
@@ -156,32 +91,6 @@ By default, the application runs on port 80. To change it:
 - JSON file storage
 - Session-based authentication
 
-## 💾 Data Storage
-
-Lists are stored as individual JSON files in `backend/data/lists/`:
-
-```json
-{
-  "id": "uuid-here",
-  "name": "Shopping List",
-  "created": "2025-11-23T21:00:00Z",
-  "modified": "2025-11-23T21:15:00Z",
-  "settings": {
-    "sort": true,
-    "checkbox": true,
-    "quantity": false
-  },
-  "items": [
-    {
-      "checkbox": false,
-      "quantity": 0,
-      "item": "Milk",
-      "indent": 0
-    }
-  ]
-}
-```
-
 ### Backup
 
 Simply copy the `backend/data/lists/` directory:
@@ -189,23 +98,6 @@ Simply copy the `backend/data/lists/` directory:
 ```bash
 cp -r backend/data/lists/ ~/backups/lxsts-$(date +%Y%m%d)/
 ```
-
-## 🔍 API Endpoints
-
-### Authentication
-- `POST /api/auth/login` - Login
-- `POST /api/auth/logout` - Logout
-- `GET /api/auth/status` - Check auth status
-
-### Lists
-- `GET /api/lists` - Get all lists (metadata only)
-- `GET /api/lists/<id>` - Get specific list with items
-- `POST /api/lists` - Create new list
-- `PUT /api/lists/<id>` - Update list
-- `DELETE /api/lists/<id>` - Delete list
-
-### Health
-- `GET /api/health` - Health check
 
 ## 🔍 Troubleshooting
 
@@ -245,16 +137,6 @@ Before deploying to production:
 5. Regular security updates for Docker images
 6. Consider adding rate limiting to API endpoints
 
-## 📊 Performance
-
-| Metric | Value |
-|--------|-------|
-| Docker build time | ~10 seconds |
-| Image size | ~200MB |
-| Startup time | ~1 second |
-| Containers | 2 (nginx + backend) |
-| Memory usage | ~100MB total |
-
 ## 🎯 Roadmap
 
 - [x] Complete list.html conversion from PHP
@@ -265,14 +147,6 @@ Before deploying to production:
 - [ ] Multi-user support
 - [ ] List templates
 - [ ] Enhanced PWA features
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## 📄 License
 
