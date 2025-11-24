@@ -1,11 +1,10 @@
 version: "3"
-
 services:
   lxsts:
     container_name: lxsts
-    image: ghcr.io/${GITHUB_REPOSITORY:-effree/lxsts}:latest
+    image: ghcr.io/effree/lxsts:latest
     ports:
-      - '80:5000'
+      - '5123:5000'
     volumes:
       - ./data:/app/data
     environment:

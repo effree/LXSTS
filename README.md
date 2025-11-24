@@ -1,164 +1,88 @@
-# LXSTS - Lightweight Lists Web Application
+# LXSTS - Lightweight List Management
 
-A self-hosted, database-less list management web app built with Python/Flask and JSON flat file storage.
+A self-hosted, database-less list management web app that uses JSON flat files for storage.
 
-## 🚀 Features
+## Features
 
-- **Lightweight Architecture**: Python/Flask backend with JSON file storage (no database required)
-- **Fast Deployment**: Docker build in ~10 seconds, startup in ~1 second
-- **Simple Storage**: Human-readable JSON files, easy to backup and migrate
-- **Progressive Web App**: Offline support with service workers
-- **Responsive Design**: Works on desktop, tablet, and mobile
-- **List Management**: Create, edit, delete, and share lists
-- **Item Features**: Checkboxes, quantities, indentation, drag-and-drop sorting
+- **Lightweight**: No database required, just JSON files
+- **Fast**: Docker startup in ~1 second
+- **Simple**: Clean, intuitive interface
+- **Offline Support**: Progressive Web App with service worker
+- **Mobile Friendly**: Responsive design for all devices
+- **List Features**: Checkboxes, quantities, indentation, drag-and-drop sorting
 - **Search**: Full-text search across all lists
 - **Authentication**: Simple username/password protection
 
-## 📋 Prerequisites
+## Getting Started
 
-- Docker Desktop installed and running
-- Git (for version control)
+### Quick Start with Docker Compose
 
-## 🛠️ Tech Stack
+```yaml
+version: "3"
 
-- **Frontend**: HTML, CSS, JavaScript (vanilla)
-- **Backend**: Python 3.11 + Flask
-- **Storage**: JSON flat files
-- **Web Server**: Nginx
-- **Containerization**: Docker & Docker Compose
-
-## 📦 Project Structure
-
+services:
+  lxsts:
+    container_name: lxsts
+    image: ghcr.io/effree/lxsts:latest
+    ports:
+      - '5123:5000'
+    volumes:
+      - ./data:/app/data
+    environment:
+      - LOGIN_USERNAME=admin
+      - LOGIN_PASSWORD=changeme
+      - SECRET_KEY=change-this-to-a-random-secret-key
+    restart: unless-stopped
 ```
-LXSTS/
-├── app/                    # Frontend (static HTML/CSS/JS)
-│   ├── index.html         # Login page
-│   ├── home.html          # Home page
-│   ├── list.html          # List editor (TODO)
-│   ├── all.html           # All lists view (TODO)
-│   ├── css/               # Stylesheets
-│   └── js/
-│       ├── api.js         # API communication module
-│       └── init.js        # Initialization scripts
-├── backend/               # Python/Flask API
-│   ├── app.py            # Main Flask application
-│   ├── storage.py        # JSON file storage module
-│   ├── auth.py           # Authentication module
-│   ├── requirements.txt  # Python dependencies
-│   ├── Dockerfile        # Backend container image
-│   └── data/
-│       └── lists/        # JSON list files
-├── config/
-│   └── default.conf      # Nginx configuration
 
-### Environment Variables
+Save as `docker-compose.yml`, then run:
 
-All configuration is done through the `.env` file (copy from `.env.example`):
+```bash
+docker compose up -d
+```
+
+Access at: `http://localhost:5123`
+
+### Configuration
+
+Edit the environment variables in `docker-compose.yml`:
 
 - `LOGIN_USERNAME`: Your login username
-- `LOGIN_PASSWORD`: Your login password  
-- `SECRET_KEY`: Flask secret key for session encryption
-- `FLASK_DEBUG`: Set to `False` in production
+- `LOGIN_PASSWORD`: Your login password
+- `SECRET_KEY`: Random string for session encryption (change this!)
 
 ### Changing the Port
 
-By default, the application runs on port 80. To change it:
+Edit the ports section in `docker-compose.yml`:
 
-1. Edit `docker-compose.yml`
-2. Find the `web` service ports section:
-   ```yaml
-   ports:
-     - '80:80'
-   ```
-3. Change the **first** number to your desired port (e.g., `8080:80` for port 8080)
-4. Restart: `docker compose down && docker compose up -d`
-5. Access at: `http://localhost:8080`
-
-### Ports
-
-- **80**: Web server (Nginx)
-- **5000**: Backend API (internal, not exposed)
-
-## 🐳 Docker Services
-
-### Web (Nginx)
-- Serves static files (HTML/CSS/JS)
-- Proxies API requests to Flask backend
-- Configuration: `config/default.conf`
-
-### Backend (Python/Flask)
-- REST API for list management
-- JSON file storage
-- Session-based authentication
-
-### Backup
-
-Simply copy the `backend/data/lists/` directory:
-
-```bash
-cp -r backend/data/lists/ ~/backups/lxsts-$(date +%Y%m%d)/
+```yaml
+ports:
+  - '8080:5000'  # Change 8080 to your desired port
 ```
 
-## 🔍 Troubleshooting
+## Data Storage
 
-### Containers won't start
+Lists are stored as JSON files in the `data/` directory. To backup:
+
 ```bash
-# Check container logs
-docker compose logs
-
-# Check specific service
-docker compose logs backend
-docker compose logs web
+cp -r data/ ~/backups/lxsts-$(date +%Y%m%d)/
 ```
 
-### API not responding
-```bash
-# Test API health
-curl http://localhost/api/health
+## Tech Stack
 
-# Check backend logs
-docker compose logs backend
-```
+- **Frontend**: HTML, CSS, JavaScript (vanilla)
+- **Backend**: Python 3.11 + Flask + Gunicorn
+- **Storage**: JSON flat files
+- **Containerization**: Docker
 
-### Permission issues with data directory
-```bash
-# Fix permissions (Unix/Mac)
-sudo chown -R $(whoami) backend/data
-```
+## License
 
-## 🛡️ Security Recommendations
+Available for personal and commercial use.
 
-Before deploying to production:
-
-1. Change default username and password
-2. Use strong SECRET_KEY in environment variables
-3. Enable HTTPS with SSL certificates
-4. Use environment files (`.env`) instead of hardcoded credentials
-5. Regular security updates for Docker images
-6. Consider adding rate limiting to API endpoints
-
-## 🎯 Roadmap
-
-- [x] Complete list.html conversion from PHP
-- [x] Complete all.html conversion from PHP
-- [x] Implement search across all lists
-- [ ] Add share functionality
-- [ ] Add data export/import
-- [ ] Multi-user support
-- [ ] List templates
-- [ ] Enhanced PWA features
-
-## 📄 License
-
-This project is available for personal and commercial use.
-
-## 👤 Author
+## Author
 
 Jeffrey Meyer
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
-- Inspired by [Flatnotes](https://github.com/dullage/flatnotes) for the lightweight, database-less approach
-- Flask for the minimal web framework
-- Nginx for reliable web serving
-- Docker for containerization
+Inspired by [Flatnotes](https://github.com/dullage/flatnotes) for the lightweight, database-less approach.
