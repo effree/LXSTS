@@ -11559,3 +11559,24 @@ textarea.jsitem {
   }
 }
 
+
+/* Phase 3: Offline indicator banner */
+.offline-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ffc107;
+  color: #000;
+  padding: 12px 0;
+  text-align: center;
+  z-index: 10000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  font-size: 14px;
+}
+
+.offline-banner .btn {
+  padding: 2px 8px;
+  font-size: 12px;
+}
+

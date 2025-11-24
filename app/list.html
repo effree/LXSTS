@@ -201,6 +201,7 @@
     <script src="js/jquery.dirty.js"></script>
     <script src="js/api.js"></script>
     <script src="js/init.js"></script>
+    <script src="js/offline-indicator.js"></script>
     <script>
         console.log('===== INLINE SCRIPT BEFORE LIST-EDITOR.JS =====');
         console.log('jQuery loaded:', typeof $ !== 'undefined');
@@ -210,13 +211,12 @@
     <script>
         console.log('===== INLINE SCRIPT AFTER LIST-EDITOR.JS =====');
 
-        // Unregister any existing service worker first
+        // Register service worker for offline support
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                for (let registration of registrations) {
-                    registration.unregister();
-                    console.log('Unregistered service worker');
-                }
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('[Service Worker] Registered successfully'))
+                    .catch(err => console.error('[Service Worker] Registration failed:', err));
             });
         }
     </script>

@@ -90,6 +90,7 @@
     <script src="lib/jquery/jquery-1.12.4.min.js"></script>
     <script src="js/api.js"></script>
     <script src="js/init.js"></script>
+    <script src="js/offline-indicator.js"></script>
     <script>
         let allLists = [];
         let currentSort = 'name';
@@ -265,12 +266,12 @@
             return div.innerHTML;
         }
 
-        // Unregister service worker
+        // Register service worker for offline support
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                for (let registration of registrations) {
-                    registration.unregister();
-                }
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('[Service Worker] Registered successfully'))
+                    .catch(err => console.error('[Service Worker] Registration failed:', err));
             });
         }
     </script>
