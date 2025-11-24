@@ -272,7 +272,17 @@ function addRow() {
     resort();
     totalCount();
     const textField = $('ul#sortable li:last-child').find('textarea').first();
-    setTimeout(function () { textField.focus() }, 300);
+    
+    // Scroll to bottom and focus new field
+    setTimeout(function () {
+        textField.focus();
+        // Scroll to bottom of page
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }, 300);
+    
     $("#listNew").dirty("setAsDirty");
 }
 
@@ -507,6 +517,8 @@ $(document).on('blur', '.jsdelete', function () {
 
 // Indent button
 $(document).on('click', '.jsindent', function (event) {
+    event.preventDefault();
+    $(this).blur(); // Remove focus from button (fixes mobile active state)
     $(this).find('[data-fa-i2svg]').toggleClass('fa-arrow-right fa-arrow-left');
     if ($(this).prev().val() == 1) {
         $(this).prev().val('0');
@@ -514,9 +526,7 @@ $(document).on('click', '.jsindent', function (event) {
         $(this).prev().val('1');
     }
     $(this).closest('li div.row').toggleClass('ms-5');
-    const textField = $(this).closest('li').find('textarea');
-    const fldLength = textField.val().length;
-    setTimeout(function () { textField.focus(); textField[0].setSelectionRange(fldLength, fldLength); }, 300);
+    // Removed auto-focus on textarea - user complained about this behavior
 });
 
 // Update list title in delete modal
@@ -541,14 +551,25 @@ $(window).on("resize", function () {
 
 // Keyboard shortcuts
 $(window).keydown(function (event) {
-    if (event.keyCode == 13 && !event.shiftKey) {
-        event.preventDefault();
-        showAlert('<span class="d-block w-100 text-start"><b>Notice</b></span><span class="d-block w-100 text-start">Return disabled.</span>Try "Shift+Enter" to add a new row.', 'border-warning', 800);
-        return false;
-    }
-    if (event.keyCode == 13 && event.shiftKey) {
-        event.preventDefault();
-        addRow();
+    // Detect if on mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (event.keyCode == 13) {
+        if (isMobile) {
+            // On mobile: Enter adds new row (no shift required)
+            event.preventDefault();
+            addRow();
+        } else {
+            // On desktop: Enter disabled, Shift+Enter adds row
+            if (!event.shiftKey) {
+                event.preventDefault();
+                showAlert('<span class="d-block w-100 text-start"><b>Notice</b></span><span class="d-block w-100 text-start">Return disabled.</span>Try "Shift+Enter" to add a new row.', 'border-warning', 800);
+                return false;
+            } else {
+                event.preventDefault();
+                addRow();
+            }
+        }
     }
 });
 
