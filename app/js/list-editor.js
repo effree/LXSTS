@@ -63,7 +63,7 @@ function initializeListEditor() {
             // Initialize form dirty tracking
             console.log('Initializing dirty tracking...');
             $("#listNew").dirty({
-                preventLeaving: false, // Disable browser's ugly prompt, use custom modal instead
+                preventLeaving: true, // Keep browser warning when navigating away
                 onDirty: function () {
                     $('.dirtyMsg').empty();
                     $('.dirtyMsg').append('Changes have been made to this list. ');
