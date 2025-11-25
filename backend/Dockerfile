@@ -11,8 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY backend/ .
 
-# Copy frontend code to static directory
-COPY app/ /app/static/
+# Copy frontend code to app directory
+COPY app/ /app/app/
 
 # Create data directory
 RUN mkdir -p data/lists
