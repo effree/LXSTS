@@ -9,11 +9,18 @@ import os
 import storage
 import auth
 
-app = Flask(__name__, static_url_path='', static_folder='static')
+app = Flask(__name__, static_url_path='', static_folder='/app/app')
 app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # Enable CORS for frontend
-CORS(app, supports_credentials=True, origins=['http://localhost', 'http://localhost:80'])
+# Support localhost on various ports and production deployments
+CORS(app, supports_credentials=True, origins=[
+    'http://localhost',
+    'http://localhost:80',
+    'http://localhost:5123',
+    'http://127.0.0.1',
+    'http://127.0.0.1:5123'
+])
 
 @app.route('/')
 def serve_index():
@@ -166,6 +173,66 @@ def delete_list(list_id):
 
 
 # ============================================================================
+# Share Endpoints (Unauthenticated)
+# ============================================================================
+
+@app.route('/api/share/<list_id>', methods=['GET'])
+def get_shared_list(list_id):
+    """Get a shared list (no authentication required)"""
+    try:
+        list_data = storage.get_list(list_id)
+        
+        if list_data is None:
+            return jsonify({'error': 'List not found'}), 404
+        
+        return jsonify(list_data), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/share/<list_id>/item/<int:item_index>', methods=['PATCH'])
+def update_shared_item_checkbox(list_id, item_index):
+    """Update checkbox state for a shared list item (no authentication required)"""
+    data = request.get_json()
+    
+    if not data or 'checkbox' not in data:
+        return jsonify({'error': 'Checkbox value required'}), 400
+    
+    checkbox_value = data.get('checkbox')
+    if checkbox_value not in [0, 1]:
+        return jsonify({'error': 'Checkbox must be 0 or 1'}), 400
+    
+    try:
+        # Get the list
+        list_data = storage.get_list(list_id)
+        
+        if list_data is None:
+            return jsonify({'error': 'List not found'}), 404
+        
+        # Check if item index is valid
+        if 'items' not in list_data or item_index >= len(list_data['items']):
+            return jsonify({'error': 'Item not found'}), 404
+        
+        # Update the checkbox value
+        list_data['items'][item_index]['checkbox'] = checkbox_value
+        
+        # Save the updated list
+        success = storage.update_list(list_id, list_data)
+        
+        if not success:
+            return jsonify({'error': 'Failed to update list'}), 500
+        
+        return jsonify({
+            'success': True,
+            'item_index': item_index,
+            'checkbox': checkbox_value
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================================
 # Health Check
 # ============================================================================
 
@@ -195,4 +262,6 @@ def internal_error(error):
 
 if __name__ == '__main__':
     # Run on all interfaces, port 5000
+    # Note: Docker maps external port 5123 to internal port 5000
+    # Access via: http://localhost:5123 (external) -> http://0.0.0.0:5000 (internal)
     app.run(host='0.0.0.0', port=5000, debug=os.getenv('FLASK_DEBUG', 'False') == 'True')

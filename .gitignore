@@ -38,5 +38,5 @@ Thumbs.db
 # Zip archives
 *.zip
 
-# Instructions
-GITHUB_PUSH_INSTRUCTIONS.md
+# Docker development compose file
+docker-compose.dev.yml

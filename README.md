@@ -57,7 +57,7 @@ Edit the ports section in `docker-compose.yml`:
 
 ```yaml
 ports:
-  - '8080:5000'  # Change 8080 to your desired port
+  - '5123:5000'  # Change 5123 to your desired port, do not change port 5000
 ```
 
 ## Data Storage
