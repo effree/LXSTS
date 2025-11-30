@@ -52,7 +52,6 @@
     <script src="lib/jquery/jquery-1.12.4.min.js"></script>
     <script src="js/api.js"></script>
     <script src="js/init.js"></script>
-    <script src="js/offline-indicator.js"></script>
     <script>
         // Check if already logged in
         (async function () {
@@ -78,15 +77,6 @@
                 errorDiv.style.display = 'block';
             }
         });
-
-        // Register service worker for offline support
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(reg => console.log('[Service Worker] Registered successfully'))
-                    .catch(err => console.error('[Service Worker] Registration failed:', err));
-            });
-        }
     </script>
 </body>
 

@@ -286,14 +286,26 @@ function addRow() {
     $("#listNew").dirty("setAsDirty");
 }
 
+// Detect if on mobile device
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+if (isMobile) {
+    $('body').addClass('mobile-view');
+}
+
 /**
  * Initialize sortable functionality
  */
 function initializeSortable() {
     $("#sortable").sortable({
-        handle: '.handle',
-        containment: "parent",
+        handle: isMobile ? null : '.handle', // Mobile: whole item; Desktop: handle only
+        delay: isMobile ? 600 : 0,           // Mobile: long press to drag
+        cancel: isMobile ? '' : "input,textarea,button,select,option", // Mobile: allow dragging from inputs
+        containment: "window",               // Allow dragging outside parent for scrolling
         tolerance: "pointer",
+        scroll: true,
+        scrollSensitivity: 150,              // Increased sensitivity for easier scrolling (covers navbar)
+        scrollSpeed: 20,                     // Faster scroll speed
         stop: function (event, ui) {
             resort();
         }
@@ -320,9 +332,6 @@ function resort() {
     });
 }
 
-/**
- * Toggle sort view
- */
 function sortView() {
     $('.fa-up-down-left-right').each(function () {
         $(this).toggleClass('d-inline-block d-none');

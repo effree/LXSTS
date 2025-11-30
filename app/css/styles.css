@@ -13442,3 +13442,10 @@ textarea.jsitem {
   padding: 2px 8px;
   font-size: 12px;
 }
+
+/* Mobile View Optimizations */
+body.mobile-view .handle { display: none !important; }
+
+
+body.mobile-view #sortable li { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+body.mobile-view #sortable li textarea { -webkit-user-select: text; user-select: text; }

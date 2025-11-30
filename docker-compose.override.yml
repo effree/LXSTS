@@ -1,0 +1,9 @@
+version: "3"
+services:
+  lxsts:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    volumes:
+      - ./app:/app/app
+      - ./backend:/app/backend
